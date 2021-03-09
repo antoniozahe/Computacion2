@@ -3,43 +3,35 @@ import sys
 
 
 class GaussJordan:
-    def llenarmatriz(self, var):
-        """
-        m = np.zeros((int(var), int(cols)))
+    def llenarmatriz(self, var, col):
 
+        m = np.zeros((int(var), int(col)))
         for i in range(int(var)):
-            if int(opc) == 1:
-                for j in range(cols):
-                    m[i][j] = float(input('M[' + str(i) + '][' + str(j) + ']= '))
-            if int(opc) == 2:
-                for j in range(int(var)):
-                    m[i][j] = float(input('M[' + str(i) + '][' + str(j) + ']='))
-                    m[i][i + int(var)] = 1
-            if int(opc) == 3:
-                for j in range(int(var)):
-                    m[i][j] = float(input('M[' + str(i) + '][' + str(j) + ']= '))
+            for j in range(col):
+                m[i][j] = float(input('M[' + str(i) + '][' + str(j) + ']= '))
         """
-        m = np.array([[0, 3, 0, 0, -1, -8],
-                      [1, 2, -1, 0, 0, 31],
-                      [1, 0, 0, 2, 0, 36],
+        m = np.array([[2, 0, 0, 0, -1, -8],
+                      [1, 2, -3, 0, 0, 31],
+                      [1, 0, 0, 3, 0, 36],
                       [0, 0, 3, 3, 0, 27],
                       [0, 0, 0, 0, 1, 30]])
+        """
         return m
 
-    def setmatriz(self, var):
-        M = self.llenarmatriz(var)
+    def setmatriz(self, var, col):
+        M = self.llenarmatriz(var, col)
 
         return M
 
     def pivoteo(self, var, M):
-        temp = np.copy(M)
+        temp = np.zeros((int(var), int(var) + 1))
         ind = []
         sum = 0
 
         for i in range(int(var)):
             ind.append(i)
             sum = sum + i
-
+        print("Ind Inicial:", ind)
         for i in range(int(var)):
             if M[i][i] == 0:
                 for j in range(int(var)):
@@ -47,7 +39,7 @@ class GaussJordan:
                         if M[j][i] != 0:
                             ind[i] = i + 1
                             ind[i + 1] = i
-
+        print("Ind Final:", ind)
         for i in range(int(var)):
             temp[i] = M[ind[i]]
 
@@ -75,7 +67,6 @@ class GaussJordan:
                     cociente = M[j][i] / M[i][i]
                     for k in range(int(col)):
                         M[j][k] = M[j][k] - cociente * M[i][k]
-
         return M
 
     def escalonadareducida(self, var, col, M):
@@ -101,7 +92,7 @@ class main:
     variables = input("Ingrese el número de incógnitas:\n n=")
     columnas = int(variables) + 1
     objGJ = GaussJordan()
-    Mat = objGJ.setmatriz(variables)
+    Mat = objGJ.setmatriz(variables, columnas)
     print("Matriz Inicial:\n", Mat)
     det = objGJ.checardeterminante(variables, Mat)
     if float(det) == 0:
