@@ -11,7 +11,7 @@ class NumericalMethods:
         x2 = func.subs(x, x1) / df.subs(x, x1)
         iter = 0
 
-        while (abs(x2) >= tol and iter < maxIter):
+        while abs(x2) >= tol and iter < maxIter:
             x2 = func.subs(x, x1) / df.subs(x, x1)
             x1 = abs(x1 - x2)
             iter += 1
@@ -50,57 +50,54 @@ class NumericalMethods:
                 return None
         raiz = a_n - fa_n * (b_n - a_n) / (fb_n - fa_n)
         return float(raiz)
-    """
-    def brentDekkerMethod(self, a, b, tol, maxIter, func):
-        root = np.inf
-        error = np.inf
-        iter = 0
 
-        if func.subs(x, a) * func.subs(x, b) >= 0:
-            print("No existe una raíz en el intervalo proporcionado...")
-            exit(0)
-        # Validar valores
-        if abs(func.subs(x, a)) < (func.subs(x, b)):
-            # Cambiar los valores de a por b y viceversa
+    def brentDekkerMethod(self, a, b, tol, maxIter, f):
+        c = a
+        cont = True
+        iter = 0
+        error = np.inf
+
+        print("Método Brent-Dekker")
+        if f.subs(x, a) * f.subs(x, b) >= 0:
+            print("No existe raíz en el rango proporcionado")
+            return 0
+        if abs(f.subs(x, a)) < abs(f.subs(x, b)):
             a, b = b, a
 
-        c = a
-        while (error > tol and iter < maxIter):
-            if (func.subs(x, a) != func.subs(x, c)) and (func.subs(x, b) != func.subs(x, c)):
-                s = ((a * func.subs(x, b) * func.subs(x, c)) / (
-                            ((func.subs(x, a) - func.subs(x, b))) * (func.subs(x, a)) - func.subs(x, c))) +
-                (((b * func.subs(x, a) * func.subs(x, c)) / (
-                            ((func.subs(x, b) - func.subs(x, a))) * (func.subs(x, b)) - func.subs(x, c)))) +
-                (((c * func.subs(x, a) * func.subs(x, b)) / (
-                            ((func.subs(x, c) - func.subs(x, a))) * (func.subs(x, c)) - func.subs(x, b))))
+        while error >= tol and iter < maxIter:
+            if f.subs(x, a) != f.subs(x, c) and f.subs(x, b) != f.subs(x, c):
+                sa = a * f.subs(x, b) * f.subs(x, c) * (1 / (f.subs(x, a) - f.subs(x, b))) * (
+                        1 / (f.subs(x, a) - f.subs(x, c)))
+                sb = b * f.subs(x, a) * f.subs(x, c) * (1 / (f.subs(x, b) - f.subs(x, a))) * (
+                        1 / (f.subs(x, b) - f.subs(x, c)))
+                sc = c * f.subs(x, a) * f.subs(x, b) * (1 / (f.subs(x, c) - f.subs(x, a))) * (
+                        1 / (f.subs(x, c) - f.subs(x, b)))
+                s = sa + sb + sc
             else:
-                # Método de la secante
-                s = b - (func.subs(x, b)) * ((b - a) / (func.subs(x, b) - func.subs(x, a)))
-            elif:
-                if (func.subs(x, a) * func.subs(x, b)) < 0:
-                    print("Existe un cambio de signo")
-                elif (func.subs(x, a) * func.subs(x, b)) > 0:
-                    print("Intervalo incorrecto:")
-                    exit(0)
+                s = b - f.subs(x, b) * (b - a) * (1 / (f.subs(x, b) - f.subs(x, a)))
 
-                error = np.inf
+            temp = (3 * a + b) / 4
+            if (temp < s < b) or (cont == True and abs(s - b) >= (abs(b - c) / 2)) or (
+                    cont == False and abs(s - b) >= (abs(c - d) / 2)) or (
+                    cont == True and abs(b - c) < abs(tol)) or (cont == False and abs(c - d) < abs(tol)):
+                s = (a + b) / 2
+                cont = True
+            else:
+                cont = False
 
-                while error > tol:
-                    c = (a + b) / 2
-                    fa = func.subs(x, a)
-                    fc = func.subs(x, c)
-                    if fc == 0:
-                        break
-                    if (fc * fa) < 0:
-                        b = c
-                    else:
-                        a = c
+            d = c
+            c = b
+            if f.subs(x, a) * f.subs(x, s) < 0:
+                b = s
+            else:
+                a = s
 
-                return c
-            if abs(func.subs(x, a)) < (func.subs(x, b)):
-            # Cambiar los valores de a por b y viceversa
+            if abs(f.subs(x, a)) < abs(f.subs(x, b)):
                 a, b = b, a
-"""
+            iter += 1
+            error = abs(b - a)
+        return b
+
     def bisectionMethod(self, a, b, tol, func):
 
         if (func.subs(x, a) * func.subs(x, b)) < 0:
@@ -159,7 +156,7 @@ def main():
     print("Raíz:", rootbisection)
     print("Tiempo de ejecución:", tiempobiseccion)
 
-    """
+
     print("________METODO INGENUO________")
     startnaive = time.time()
     rootnaive = objNM.incrementalSearch(a, b, func)
@@ -167,7 +164,7 @@ def main():
     tiemponaive = endnaive - startnaive
     print("Más Cercano a la Raíz:", rootnaive)
     print("Tiempo de ejecución:", tiemponaive)
-    """
+
 
     print("________METODO NEWTONRAPHSON________")
     startnr = time.time()
@@ -185,8 +182,17 @@ def main():
     print("Más Cercano a la Raíz:", rootsec)
     print("Tiempo de ejecución:", tiemposec)
 
+    print("________METODO BRENT-DEKKER________")
+    startbd = time.time()
+    rootbd = objNM.secante(func, a, b)
+    endbd = time.time()
+    tiempobd = endbd - startbd
+    print("Más Cercano a la Raíz:", rootbd)
+    print("Tiempo de ejecución:", tiempobd)
+
     print("Programa Finalizado con Éxito")
 
 
 if __name__ == "__main__":
     main()
+
